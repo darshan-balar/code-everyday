@@ -1,20 +1,37 @@
 #include<stdio.h>
+#include<stdlib.h>
+#define  MALLOC(p,s)\
+    if(!(p=malloc(s)))\
+    {\
+        fprintf(stderr, "Insufficient memory");\
+        exit(EXIT_FAILURE);\
+    }
 
-#define MAX_SIZE 100
 
 typedef struct
 {
     int key;
 }element;
 
-int Isempty(int *top)
+element *stack;
+int Isfull(int *top, int *capacity)
 {
-    if((*top)+1 <= MAX_SIZE-1)
-        return 1;
+    if((*top)+1 > (*capacity))
+    {
+        element *p = stack;
+        if(!( p = realloc(p,sizeof(*stack)*(*capacity)*2)))
+        {  
+            fprintf(stderr, "Insufficient memory");
+            return 1; 
+        }
+        stack = p;
+        (*capacity) *= 2;
+    }
     return 0;
+
 }
 
-void Display(element *stack, int *top)
+void Display(int *top)
 {
     if((*top) == -1)
     {   
@@ -28,7 +45,7 @@ void Display(element *stack, int *top)
     printf("%d\n",stack[*top].key);
 
 }
-void Pop(element *stack, int *top)
+void Pop(int *top)
 {
     if((*top)==-1)
     {
@@ -37,24 +54,22 @@ void Pop(element *stack, int *top)
     }
     printf("\n\n\t\t\telement %d removed\n",stack[(*top)--].key);
 }
-void Push(element *stack, int *top)
+void Push(int *top, int *capacity)
 {
-    if(Isempty(top))
-    {
-        printf("\n\nEnter the element to be pushed: ");
-        scanf("%d",&(stack[++(*top)].key));
-        printf("\n\nElement %d pushed\n\n",stack[(*top)].key);
+    if(Isfull(top,capacity))
         return;
-    }
-    printf("\n\n\t\t\tStack is full\n");
+    printf("Enter the element: ");
+    scanf("%d",&(stack[++(*top)].key));
+
+    printf("Element %d pushed\n",stack[(*top)].key);
+    return;
 }
-
-
 int main()
 {
-    element stack[MAX_SIZE];
-    int option,c;
-    int top=-1;
+    MALLOC(stack, sizeof(*stack));
+    int capacity = 1;
+    int top = -1;
+    int option;
 
     printf("\t\t\t\t==================================\n");
     printf("\t\t\t\t        welcome to stack \n");
@@ -69,11 +84,11 @@ int main()
 
         switch(option)
         {
-            case 1: Push(stack, &top);
+            case 1: Push(&top, &capacity);
                     break;
-            case 2: Pop(stack, &top);
+            case 2: Pop(&top);
                     break;
-            case 3: Display(stack, &top);
+            case 3: Display(&top);
                     break;
             case 4: return 0;
             default : printf("Enter the correct option\n");
