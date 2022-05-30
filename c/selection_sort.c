@@ -37,7 +37,7 @@ int main()
         min = i;
         for(int j=i+1;j<n;j++) // comparing with each element
         {
-            if(list[j]<list[i])   // if found then replace min index   
+            if(list[j]<list[min])   // if found then replace min index   
                 min = j;         
         }
         if(i != min)             // if min is not the current element
